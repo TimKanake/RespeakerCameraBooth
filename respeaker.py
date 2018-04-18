@@ -1,17 +1,7 @@
 import pyaudio
 import Queue
-import math
-import audioop
 import time
 import wave
-from collections import deque
-import sys
-import os
-
-
-SOUND_SPEED = 340
-MIC_DISTANCE_4 = 0.081
-MAX_TDOA_4 = MIC_DISTANCE_4 / float(SOUND_SPEED)
 
 
 class MicArray(object):
@@ -35,7 +25,6 @@ class MicArray(object):
 		wf.writeframes(data)
 		wf.close()
 
-
 	def run(self, audio_length=10, start_time=time.time()):
 		p = self.pyaudio_instance
 		device_index = None
@@ -53,8 +42,6 @@ class MicArray(object):
 		audio2send = []
 		cur_data = ''
 		rel = self.RATE / self.CHUNK
-		started = False
-		response = []
 		while True:
 			if time.time() >= start_time:
 					print 'Opening stream ', time.time()
@@ -71,7 +58,7 @@ class MicArray(object):
 					for i in range(0, int(rel * audio_length)):
 							try:
 									cur_data = stream.read(self.CHUNK, False)
-							except IOError as ex:
+							except IOError:
 									continue
 
 							audio2send.append(cur_data)
@@ -80,7 +67,8 @@ class MicArray(object):
 					self.save_speech(audio2send)
 					return
 
+
 if __name__ == '__main__':
 	sd = MicArray()
 	time_var = time.time()
-	sd.run(start_time = time_var)
+	sd.run(start_time=time_var)

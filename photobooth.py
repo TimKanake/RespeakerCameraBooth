@@ -9,14 +9,16 @@ import argparse
 
 
 # Configure the ArgParser
-parser = argparse.ArgumentParser(description = "Specify arguments to override default settings.")
+parser = argparse.ArgumentParser(description="Specify arguments to override default settings.")
 parser.add_argument('-facedetect', default=False, help='Specifies if recording should start upon face detection',
 					type=bool)
-parser.add_argument('-length', help='Amount of time to record in Seconds', default=30)
+parser.add_argument('-length', help='Amount of time to record in Seconds', default=30, type=int)
 
 args = parser.parse_args()
 
 camera = PiCamera()
+
+
 def setup_time():
 	try:
 		import ntplib
@@ -29,8 +31,7 @@ def setup_time():
 	print('Done.')
 
 
-
-def detect_face(image_path = 'foo.jpeg', casc_path = 'haarcascade_frontalface_default.xml'):
+def detect_face(image_path='foo.jpeg', casc_path = 'haarcascade_frontalface_default.xml'):
 	face_cascade = cv2.CascadeClassifier(casc_path)
 	face_found = False
 	global camera
@@ -57,9 +58,7 @@ def detect_face(image_path = 'foo.jpeg', casc_path = 'haarcascade_frontalface_de
 			os.remove(image_path)
 	for (x, y, w, h) in faces:
 		cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-	cv2.imshow("Face found", image)
-	cv2.waitKey(3000)
-	os.remove(image_path)
+	print 'A Face Has Been Found!!'
 	return
 
 
@@ -87,14 +86,15 @@ def capture_video(video_length=10, recording_name='foo.h264', start_time=time.ti
 			print 'finished recording video ', time.time()
 			break
 
-def record_video_with_audio(length=60,start_delay=8.0,on_face_detect=False):
+
+def record_video_with_audio(length=60, start_delay=8.0, on_face_detect=False):
 	sd = MicArray()
 	if on_face_detect:
 		detect_face()
 		start_time = time.time()+start_delay
 	else:
 		start_time = time.time()+start_delay
-	t1 = Thread(target=capture_video, kwargs={'start_time':start_time, 'video_length':length})
+	t1 = Thread(target=capture_video, kwargs={'start_time': start_time, 'video_length':length})
 	t2 = Thread(target=sd.run, kwargs={'start_time':start_time, 'audio_length':length})
 	t1.start()
 	t2.start()
@@ -105,5 +105,4 @@ def record_video_with_audio(length=60,start_delay=8.0,on_face_detect=False):
 if __name__ == '__main__':
 	length = args.length
 	on_face_detect = args.facedetect
-	start_delay=args.start_delay
 	record_video_with_audio(length,on_face_detect=on_face_detect)
