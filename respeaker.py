@@ -56,29 +56,29 @@ class MicArray(object):
 		started = False
 		response = []
 		while True:
-                        if time.time() >= start_time:
-                                print 'Opening stream ', time.time()
-                                stream = p.open(
-                                        input=True,
-                                        format=self.FORMAT,
-                                        channels=self.CHANNELS,
-                                        rate=int(self.RATE),
-                                        frames_per_buffer=self.CHUNK,
-                                        input_device_index=device_index,)
-                                print 'Stream is now open ', time.time()
-                                
-                                cur_data = stream.read(self.CHUNK)
-                                for i in range(0, int(rel * audio_length)):
-                                        try:
-                                                cur_data = stream.read(self.CHUNK, False)
-                                        except IOError as ex:
-                                                continue
-                                                
-                                        audio2send.append(cur_data)
-                                        print i
-                                print 'Finished recording audio ', time.time()
-                                self.save_speech(audio2send)
-                                return
+			if time.time() >= start_time:
+					print 'Opening stream ', time.time()
+					stream = p.open(
+							input=True,
+							format=self.FORMAT,
+							channels=self.CHANNELS,
+							rate=int(self.RATE),
+							frames_per_buffer=self.CHUNK,
+							input_device_index=device_index,)
+					print 'Stream is now open ', time.time()
+
+					cur_data = stream.read(self.CHUNK)
+					for i in range(0, int(rel * audio_length)):
+							try:
+									cur_data = stream.read(self.CHUNK, False)
+							except IOError as ex:
+									continue
+
+							audio2send.append(cur_data)
+							print i
+					print 'Finished recording audio ', time.time()
+					self.save_speech(audio2send)
+					return
 
 if __name__ == '__main__':
 	sd = MicArray()
